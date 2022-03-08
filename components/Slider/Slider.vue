@@ -1,35 +1,23 @@
 <template>
-  <div>
-    <h1>Лучшие предложения от&nbsp;букмекерских контор</h1>
+  <div class="wrapper">
+    <Logo class="wrapper-logo"></Logo>
+    <h1 class="wrapper-title">Лучшие предложения от&nbsp;букмекерских контор</h1>
     <div ref="wrapper" class="scroll-wrapper">
       <div ref="scrollFiller" class="scroll-filler"></div>
       <div ref="scroll" class="scroll">
         <div ref="inner" class="scroll-inner">
-          <a href="#" ref="scrollItem" class="scroll-item">
-            <h2>Слайд 1</h2>
-            <br /><br /><br /><br /><br />
-            <span class="scroll-item-date">Описание</span>
-          </a>
-          <a href="#" ref="scrollItem" class="scroll-item red">
-            <h2>Слайд 2</h2>
-            <span class="scroll-item-date">Описание</span>
-          </a>
-          <a href="#" ref="scrollItem" class="scroll-item">
-            <h2>Слайд 3</h2>
-            <span class="scroll-item-date">Описание</span>
-          </a>
-          <a href="#" ref="scrollItem" class="scroll-item bees">
-            <h2>Слайд 4</h2>
-            <span class="scroll-item-date">Описание</span>
-          </a>
-          <a href="#" ref="scrollItem" class="scroll-item red">
-            <h2>Слайд 5</h2>
-            <span class="scroll-item-date">Описание</span>
-          </a>
-          <a href="#" ref="scrollItem" class="scroll-item">
-            <h2>Слайд 6</h2>
-            <span class="scroll-item-date">1 сен 2020</span>
-          </a>
+          <div
+            href="#"
+            v-for="(slide, index) in sliderData"
+            :key="index"
+            ref="scrollItem" 
+            class="scroll-item"
+          >
+            <Banner
+              :banner="slide"
+              :openIcon="true"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -40,31 +28,26 @@
       </div>
       <button class="scroll-btn next" ref="btnNext" @click="nextBtn()"></button>
     </div>
-
     <div class="info">
-      <p>Это слайдер. Попробуйте прокрутить!</p>
-      <p>
-        <a
-          target="_blank"
-          href="https://tympanus.net/codrops/2019/07/10/how-to-add-smooth-scrolling-with-inner-image-animations-to-a-web-page/"
-          >Вдохновленный этой демонстрацией.</a
-        >
-      </p>
-      <p class="sub">С помощью мыши? Зажмите <b>Shift</b> и тащи</p>
+      Guesser - беттинг платформа, которая предоставляет лучшие предложения для пользователей 
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'nuxt-property-decorator'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import Banner from "~/components/Banner/Banner.vue"
+import Logo from "~/components/Logo.vue"
 
-@Component
+@Component({
+  components: {
+    Banner,
+    Logo,
+  }
+})
 export default class Slider extends Vue {
-  public wrapper = this.$refs.wrapper
-  public el = this.$refs.scroll
-  public filler = this.$refs.scrollFiller
-  public position = this.$refs.position
-  public inner = this.$refs.inner
+
+  @Prop({ type: Array, default: () => []}) sliderData!: Array<object>
 
   public lerp = (a: number, b: number, n: number) => {
     return (1 - n) * a + n * b
@@ -80,7 +63,7 @@ export default class Slider extends Vue {
     let now = this.lerp(
       this.scrollNow,
       (this.$refs.wrapper as Element).scrollLeft,
-      0.15
+      0.5
     )
     ;(this as any).$gsap.set(this.$refs.scroll, { x: -now })
     ;(this as any).$gsap.set(this.$refs.position, {
@@ -129,12 +112,12 @@ export default class Slider extends Vue {
 
   public nextBtn() {
     ;(this.$refs.wrapper as HTMLElement).scrollLeft +=
-      (this.$refs.scrollItem as HTMLElement).offsetWidth * 2 - 20
+      (this.$refs.scrollItem as any)[0].offsetWidth * 2 + 12
   }
 
   public prevBtn() {
     ;(this.$refs.wrapper as HTMLElement).scrollLeft -=
-      (this.$refs.scrollItem as HTMLElement).offsetWidth * 2 - 20
+      (this.$refs.scrollItem as any)[0].offsetWidth * 2 + 12
   }
 
   checkHideControlBar() {
@@ -148,7 +131,8 @@ export default class Slider extends Vue {
   mounted() {
     window.addEventListener('resize', this.checkHideControlBar)
     this.checkHideControlBar()
-    this.animate()
+    this.animate();
+    (this.$refs.wrapper as HTMLElement).scrollLeft = (this.$refs.scrollItem as any)[0].offsetWidth / 2
     ;(this as any).$refs.scrollFiller.style.width =
       (this as any).$refs.inner.offsetWidth + this.padding * 2 + 'px'
 
@@ -165,6 +149,29 @@ export default class Slider extends Vue {
 }
 </script>
 <style lang="scss">
+.wrapper {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &-logo {
+    align-self: center;
+    margin: 32px 0
+  }
+  
+  &-title {
+    font-family: Gilroy;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 26px;
+    line-height: 116%;
+    letter-spacing: -0.01em;
+    margin: 0;
+    padding: 0 40px;
+    margin-bottom: 20px;
+  }
+}
 .scroll {
   &-wrapper {
     height: fit-content;
@@ -172,6 +179,8 @@ export default class Slider extends Vue {
     overflow-x: auto;
     overflow-y: hidden;
     scrollbar-width: none;
+    position: relative;
+    scroll-behavior: smooth;
 
     &::-webkit-scrollbar {
       width: 0;
@@ -186,13 +195,13 @@ export default class Slider extends Vue {
   }
 
   // this is the most problematic part that actually breaks the slider in Safari. I think the problem has something to do with 'position: sticky', but it doesn't seem fixable for now.
-  padding: 20px 20px 40px;
   white-space: nowrap;
   position: sticky;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
+  padding: 20px 20px 50px;
 
   &-filler {
     width: 100%;
@@ -204,21 +213,15 @@ export default class Slider extends Vue {
     width: fit-content;
     display: flex;
     align-items: stretch;
-
-    & a {
-      margin-right: 6px;
-    }
   }
 
   &-item {
-    width: 160px;
+    width: 179px;
+    height: 312px;
     border-radius: 16px;
-    background-image: linear-gradient(130deg, #9457e2, #5029bb);
     transform: perspective(400px);
-    box-shadow: 0 8px 20px 0 rgba(108, 79, 197, 0.44);
-    padding: 20px 30px;
+    box-shadow: 0px 22px 26px rgba(26, 26, 29, 0.17);
     vertical-align: top;
-    color: white;
     text-decoration: none;
     white-space: normal;
     display: flex;
@@ -249,7 +252,7 @@ export default class Slider extends Vue {
     }
 
     &:not(:last-child) {
-      margin-right: 0;
+      margin-right: 8px;
     }
 
     h2 {
@@ -271,9 +274,10 @@ export default class Slider extends Vue {
   &-position {
     &-wrapper {
       width: 100%;
-      margin-top: -10px;
       display: flex;
       align-items: center;
+      margin-top: 10px;
+      padding: 0 40px;
     }
 
     height: 1px;
@@ -320,35 +324,16 @@ export default class Slider extends Vue {
 }
 
 .info {
-  padding: 10px;
-  text-align: center;
-  border-radius: 4px;
-  box-shadow: 0 0 0 1px #ececec;
-  margin-top: 30px;
-  position: relative;
-
-  p {
-    color: #898e90;
-    font-size: 0.9em;
-    margin: 5px 10px;
-
-    &.sub {
-      font-size: 0.7em;
-      margin-top: 7px;
-      opacity: 0.5;
-      line-height: 1;
-    }
-
-    a {
-      color: #6c5dff;
-      text-decoration: none;
-      opacity: 0.8;
-
-      &:hover {
-        opacity: 1;
-      }
-    }
-  }
+  width: 100%;
+  padding: 0 40px;
+  margin-top: 28px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 144%;
+  color: rgba(41, 45, 50, 0.56);
+  padding-bottom: 20px;
 }
 
 footer {

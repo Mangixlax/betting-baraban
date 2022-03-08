@@ -63,3 +63,10 @@ input, textarea, button {
 .mobile__menu-overlay-enter, .mobile__menu-overlay-leave-active {
   opacity: 0;
 }
+
+@font-face {
+  font-family: 'Gilroy';
+  src: local("Gilroy"),url('~assets/fonts/Gilroy-Regular.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+}

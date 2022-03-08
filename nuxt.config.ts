@@ -29,7 +29,7 @@ export default {
   ],
 
   styleResources: {
-    scss: ['~/scss/_mixins.scss', '~/scss/_colors.scss'],
+    scss: ['~/scss/_fonts.scss'],
   },
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -38,7 +38,19 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
+    '@nuxtjs/svg-sprite',
+    '@nuxt/image',
   ],
+
+  image: {
+    dir: 'assets/images',
+    domains: [
+      process.env.BASE_URL,
+    ],
+    alias: {
+      s1: process.env.BASE_URL,
+    },
+  },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
