@@ -1,7 +1,9 @@
 <template>
   <div class="wrapper">
     <Logo class="wrapper-logo"></Logo>
-    <h1 class="wrapper-title">Лучшие предложения от&nbsp;букмекерских контор</h1>
+    <h1 class="wrapper-title">
+      Лучшие предложения от&nbsp;букмекерских контор
+    </h1>
     <div ref="wrapper" class="scroll-wrapper">
       <div ref="scrollFiller" class="scroll-filler"></div>
       <div ref="scroll" class="scroll">
@@ -10,44 +12,54 @@
             href="#"
             v-for="(slide, index) in sliderData"
             :key="index"
-            ref="scrollItem" 
+            ref="scrollItem"
             class="scroll-item"
           >
-            <Banner
-              :banner="slide"
-              :openIcon="true"
-            />
+            <Banner :banner="slide" :promo="promo" name="banner" />
           </div>
         </div>
       </div>
     </div>
     <div class="scroll-position-wrapper" v-show="isHideControlBar">
-      <button class="scroll-btn prev" ref="btnPrev" @click="prevBtn()"></button>
+      <span class="scroll-btn prev">
+        <svg-icon
+          name="slider-prev"
+          ref="btnPrev"
+          @click="prevBtn()"
+        ></svg-icon>
+      </span>
       <div class="scroll-position">
         <div ref="position" class="scroll-position-inner"></div>
       </div>
-      <button class="scroll-btn next" ref="btnNext" @click="nextBtn()"></button>
+      <span class="scroll-btn next">
+        <svg-icon
+          name="slider-next"
+          ref="btnNext"
+          @click="nextBtn()"
+        ></svg-icon>
+      </span>
     </div>
     <div class="info">
-      Guesser - беттинг платформа, которая предоставляет лучшие предложения для пользователей 
+      Guesser - беттинг платформа, которая предоставляет лучшие предложения для
+      пользователей
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
-import Banner from "~/components/Banner/Banner.vue"
-import Logo from "~/components/Logo.vue"
+import Banner from '~/components/Banner/Banner.vue'
+import Logo from '~/components/Logo.vue'
 
 @Component({
   components: {
     Banner,
     Logo,
-  }
+  },
 })
 export default class Slider extends Vue {
-
-  @Prop({ type: Array, default: () => []}) sliderData!: Array<object>
+  @Prop({ type: Array, default: () => [] }) sliderData!: Array<object>
+  @Prop({ type: String, default: '' }) promo!: string
 
   public lerp = (a: number, b: number, n: number) => {
     return (1 - n) * a + n * b
@@ -101,7 +113,11 @@ export default class Slider extends Vue {
 
     if ((this.$refs.wrapper as HTMLElement).scrollLeft === 0) {
       ;(btns.prev as any).disabled = true
-    } else if ((this.$refs.inner as HTMLElement).offsetWidth - (this.$refs.wrapper as HTMLElement).scrollLeft === (this.$refs.wrapper as HTMLElement).offsetWidth - this.padding * 2) {
+    } else if (
+      (this.$refs.inner as HTMLElement).offsetWidth -
+        (this.$refs.wrapper as HTMLElement).scrollLeft ===
+      (this.$refs.wrapper as HTMLElement).offsetWidth - this.padding * 2
+    ) {
       ;(btns as any).next.disabled = true
     } else {
       ;(btns.prev as any).disabled = false
@@ -120,21 +136,12 @@ export default class Slider extends Vue {
       (this.$refs.scrollItem as any)[0].offsetWidth * 2 + 12
   }
 
-  checkHideControlBar() {
+  checkResize() {
     if ((this.$refs.inner as HTMLElement).clientWidth > window.innerWidth) {
       this.isHideControlBar = true
     } else {
       this.isHideControlBar = false
     }
-  }
-
-  mounted() {
-    window.addEventListener('resize', this.checkHideControlBar)
-    this.checkHideControlBar()
-    this.animate();
-    (this.$refs.wrapper as HTMLElement).scrollLeft = (this.$refs.scrollItem as any)[0].offsetWidth / 2
-    ;(this as any).$refs.scrollFiller.style.width =
-      (this as any).$refs.inner.offsetWidth + this.padding * 2 + 'px'
 
     ;(this as any).$refs.position.style.width =
       ((this as any).$refs.wrapper.offsetWidth /
@@ -143,8 +150,18 @@ export default class Slider extends Vue {
       '%'
   }
 
+  mounted() {
+    window.addEventListener('resize', this.checkResize)
+    this.checkResize()
+    this.animate()
+    ;(this.$refs.wrapper as HTMLElement).scrollLeft =
+      (this.$refs.scrollItem as any)[0].offsetWidth / 2
+    ;(this as any).$refs.scrollFiller.style.width =
+      (this as any).$refs.inner.offsetWidth + this.padding * 2 + 'px'
+  }
+
   beforeDestroy() {
-    window.removeEventListener('resize', this.checkHideControlBar)
+    window.removeEventListener('resize', this.checkResize)
   }
 }
 </script>
@@ -157,9 +174,9 @@ export default class Slider extends Vue {
 
   &-logo {
     align-self: center;
-    margin: 32px 0
+    margin: 32px 0;
   }
-  
+
   &-title {
     font-family: Gilroy;
     font-style: normal;
@@ -190,7 +207,7 @@ export default class Slider extends Vue {
     &::-webkit-scrollbar-thumb,
     &::-webkit-scrollbar-track,
     &::-webkit-scrollbar-thumb:hover {
-      background: transparent
+      background: transparent;
     }
   }
 
@@ -283,11 +300,11 @@ export default class Slider extends Vue {
     height: 1px;
     background-color: #f1f1f1;
     flex: 1;
-    margin: 0 5px;
+    margin: 0 16px;
 
     &-inner {
       height: 1px;
-      background-color: #d0d0d0;
+      background-color: #292d32;
     }
   }
 
@@ -296,24 +313,17 @@ export default class Slider extends Vue {
     appearance: none;
     border: none;
     background: none;
-    width: 26px;
-    height: 26px;
-    background-color: white;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E");
-    background-position: center;
-    background-size: 20px;
+    width: 24px;
+    height: 24px;
     z-index: 9;
     cursor: pointer;
     opacity: 0.6;
     color: rgba(179, 179, 179, 0.7);
     transition-duration: 0.3s;
 
-    &:hover {
-      opacity: 1;
-    }
-
-    &.prev {
-      transform: scaleX(-1);
+    svg {
+      height: 24px;
+      width: 24px;
     }
 
     &[disabled] {

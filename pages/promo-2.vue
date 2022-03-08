@@ -1,6 +1,6 @@
 <template>
   <main :class="$style['main']">
-    <Slider :slider-data="Slider" promo="promo-1" />
+    <Slider :slider-data="Slider" promo="promo-2" />
   </main>
 </template>
 
@@ -27,7 +27,7 @@ interface IBanner {
     Slider,
   },
 })
-export default class Promo1 extends Vue {
+export default class Promo2 extends Vue {
   public Slider: Array<IBanner> = [
     {
       background: 'banners/Creative-1.jpg',

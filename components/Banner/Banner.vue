@@ -4,29 +4,34 @@
     :style="{backgroundImage: `url(${$img(banner.background)})`}"
   > 
     <span
-        @click="isShowFullsize = !isShowFullsize"
-        :class="$style['banner-icon']"
-      >
-        <svg-icon :name="openIcon ? 'open': 'close'">
-        </svg-icon>
+      @click="onShowModal"
+      v-if="promo === 'promo-1' || promo === 'promo-3'"
+      :class="$style['banner-icon']"
+    >
+      <svg-icon :name="promo === 'promo-1' ? 'open' : 'open-2'">
+      </svg-icon>
     </span>
     <div :class="$style['banner__container']">
       <img :class="$style['banner__container-logo']" :src="$img(`logo/${banner.logo}`)" alt="logo">
       <div :class="$style['banner__container-title']"> {{banner.title }}</div>
       <div :class="$style['banner__container-subtitle']"> {{banner.subTitle }}</div>
       <div :class="$style['banner__container-description']" v-if="banner.description "> {{banner.description }}</div>
-      <a 
+      <a
+        @click="goToIndex"
+        v-if="promo === 'promo-1' || promo === 'promo-2'"
         :class="{
           [$style['banner__container-button']]: true,
           [$style['banner__container-button--pink']]: banner.button.style === 'pink',
         }"
-        
       >
         {{ banner.button.label }}
       </a>
-    <div :class="$style['banner--fullsize']" v-if="isShowFullsize">
-      <BannerRec :banner="banner" :openIcon="false"/>
-    </div>
+      <a
+        v-if="promo === 'promo-3'"
+        @click="goToIndex"
+        :class="$style['banner__container-link']"
+      >
+      </a>
     </div>
   </div>
 </template>
@@ -50,8 +55,10 @@ interface IBanner {
   name: 'Banner'
 })
 export default class Banner extends Vue {
-  @Prop({ type: Boolean, default: true}) openIcon!: boolean
   @Prop({ type: Object, default: () => {} }) banner!: IBanner
+  @Prop({ type: String, required: true }) name!: string
+
+  @Prop({ type: String, default: ''}) promo!: string
 
   public isShowFullsize: boolean = false
 
@@ -59,21 +66,34 @@ export default class Banner extends Vue {
     this.isShowFullsize = true
   }
 
-  public hideFullsize() {
-    this.isShowFullsize = false
+  public onShowModal() {
+    (this as any).$modal.show({
+      bind: {
+        fullSize: true,
+        name: 'banner',
+        banner: this.banner,
+        openIcon: false
+      },
+      component: () =>
+        import('~/components/Modal/Banner/ModalBanner.vue'),
+    })
+  }
+  
+  public onHideModal() {
+    (this as any).$modal.hide(this.name)
+  }
+
+  public goToIndex() {
+    this.$router.push({ name: 'index' })
+  }
+
+  mounted() {
+    console.log(this.promo)
   }
 }
 </script>
 
 <style lang="scss" module>
-@font-face {
-  font-family: 'Gilory';
-  src: local("Gilory"),url('./assets/fonts/Gilroy-Regular.woff') format('woff');
-  font-weight: 100;
-  font-style: normal;
-}
-
-
 .banner {
   height: 100%;
   width: 100%;
@@ -83,12 +103,14 @@ export default class Banner extends Vue {
   border-radius: 16px;
   display: flex;
   flex-direction: column;
+  position: relative;
 
   &-icon {
     height: 24px;
     width: 24px;
     align-self: flex-end;
     margin: 2px;
+    z-index: 2;
     
     svg {
       height: 24px;
@@ -138,6 +160,7 @@ export default class Banner extends Vue {
 
     &-button {
       text-decoration: none;
+      cursor: pointer;
       padding: 10px 18px;
       background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(8px);
@@ -154,6 +177,14 @@ export default class Banner extends Vue {
         background: rgba(162, 23, 228, 0.8);
         color: rgba(255, 255, 255, 0.96);
       }
+    }
+
+    &-link {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
     }
   }
   &--fullsize {
