@@ -53,7 +53,7 @@ export default class ModalContentCallbackAfk extends Vue {
   }
 
   public goToIndex() {
-    this.hideModal
+    this.hideModal()
     this.$router.push({ name: 'index' })
   }
 }

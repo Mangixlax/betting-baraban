@@ -103,7 +103,6 @@ export default class Banner extends Vue {
   border-radius: 16px;
   display: flex;
   flex-direction: column;
-  position: relative;
 
   &-icon {
     height: 24px;
@@ -123,6 +122,7 @@ export default class Banner extends Vue {
     height: 100%;
     flex-direction: column;
     margin-top: 12px;
+    position: relative;
 
     &-logo {
       max-height: 20px;
@@ -163,7 +163,7 @@ export default class Banner extends Vue {
       cursor: pointer;
       padding: 10px 18px;
       background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(8px);
+      // backdrop-filter: blur(8px);
       font-family: Gilroy;
       font-style: normal;
       font-weight: normal;
