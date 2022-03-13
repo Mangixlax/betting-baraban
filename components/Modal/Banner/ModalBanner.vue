@@ -5,14 +5,13 @@
   )
     div(
       :class="$style['modal__header']"
-      :style="{ backgroundImage: `url(${$img('/modals/header.jpg')})`}"
+      :style="{ backgroundImage: `url(${require('@/assets/images/modals/header.jpg')})`}"
     )
       span(
         @click="hideModal"
         :class="$style['modal__header-close']"
       )
         svg-icon(name="close")
-
     div(:class="$style['modal__body']")
       div(:class="$style['modal-title']") {{ banner.title }}
       div(:class="$style['modal-subtitle']") {{ banner.subTitle }} Пополняй счет на 500 рублей и получай 1000 рублей фрибетом. И так 20 раз. Используй фрибеты для ставок, выполняй условие отыгрыша и выводи чистый выигрыш на основной счет. Приятной игры!
