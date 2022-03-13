@@ -126,8 +126,9 @@ export default class Banner extends Vue {
 
     &-logo {
       max-height: 20px;
-      width: min-content;
       margin-bottom: 20px;
+      object-fit: contain;
+      object-position: left;
     }
 
     &-title {
